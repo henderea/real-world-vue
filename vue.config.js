@@ -4,6 +4,10 @@ module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
     allowedHosts: 'all',
-    host: '0.0.0.0'
-  }
+    client: {
+      webSocketURL: {
+        hostname: 'code-server.henderea.com',
+      },
+    },
+  },
 });
