@@ -41,7 +41,7 @@
       "parser": "@babel/eslint-parser"
     },
     "rules": {
-      "no-console":"off"
+      "no-console": "off"
     }
   },
   "browserslist": [
