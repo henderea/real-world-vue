@@ -3,13 +3,14 @@ import NProgress from 'nprogress';
 import EventService from '@/services/EventService';
 import GStore from '@/store';
 import EventList from '../views/EventList.vue';
-import AboutView from '../views/AboutView.vue';
-import EventLayout from '../views/event/EventLayout.vue';
-import EventDetails from '../views/event/EventDetails.vue';
-import EventRegister from '../views/event/EventRegister.vue';
-import EventEdit from '../views/event/EventEdit.vue';
 import NotFound from '../views/NotFound.vue';
 import NetworkError from '../views/NetworkError.vue';
+
+const AboutView = () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue');
+const EventLayout = () => import(/* webpackChunkName: "event" */ '../views/event/EventLayout.vue');
+const EventDetails = () => import(/* webpackChunkName: "event" */ '../views/event/EventDetails.vue');
+const EventRegister = () => import(/* webpackChunkName: "event" */ '../views/event/EventRegister.vue');
+const EventEdit = () => import(/* webpackChunkName: "event" */ '../views/event/EventEdit.vue');
 
 const routes = [
   {
@@ -51,6 +52,7 @@ const routes = [
         path: 'edit',
         name: 'event-edit',
         component: EventEdit,
+        meta: { requireAuth: true },
       },
     ],
   },
@@ -88,10 +90,26 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { top: 0 };
+  },
 });
 
-router.beforeEach(() => {
+router.beforeEach((to, from) => {
   NProgress.start();
+  const notAuthorized = true;
+  if (to.meta.requireAuth && notAuthorized) {
+    GStore.flashMessage = 'Sorry, you are not authorized to view this page';
+
+    setTimeout(() => {
+      GStore.flashMessage = '';
+    }, 3000);
+
+    if (from.href) {
+      return false;
+    }
+    return '/';
+  }
 });
 
 router.afterEach(() => {
